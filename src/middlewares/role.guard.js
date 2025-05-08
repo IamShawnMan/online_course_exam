@@ -10,12 +10,12 @@ export const roleGuard = (...roles) => {
       const user = req?.user;
       if (roles.includes("self")) {
         if (roles.includes(user.role) || user.id === req.params?.id) {
-          next();
+          return next();
         } else {
           throw new appError("Forbidden user", 403);
         }
       }
-      if (!roles.includes(req.user.role)) {
+      if (!roles.includes(user.role)) {
         throw new appError("Forbidden user", 403);
       }
       next();

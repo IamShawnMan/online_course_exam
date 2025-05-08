@@ -3,6 +3,7 @@ import {
   superAdminUserValidator,
   loginValidate,
   adminValidation,
+  updateValidation,
 } from "../validations/index.js";
 import { appError } from "../utils/catchError.js";
 import { encode, decode } from "../utils/encode-decode.js";
@@ -15,7 +16,6 @@ import {
   generateAccessToken,
   generateRefreshToken,
 } from "../utils/generateToken.js";
-import { updateValidation } from "../validations/user.update.validation.js";
 
 export class UserController {
   async create(req, res, next) {
@@ -214,7 +214,13 @@ export class UserController {
   async getOne(req, res, next) {
     try {
       const { id } = req.params;
-      const user = await UserController.findUserById(id);
+
+      const user = await User.findById(id);
+
+      if (!user) {
+        throw new appError("User not found", 404);
+      }
+
       res.json({
         status: "success",
         message: "User by id",
@@ -228,7 +234,10 @@ export class UserController {
   async update(req, res, next) {
     try {
       const { id } = req.params;
-      const user = await UserController.findUserById(id);
+      const user = await User.findById(id);
+      if (!user) {
+        throw new appError("User not found", 404);
+      }
       const { error, value } = updateValidation(req.body);
       if (error) {
         throw new appError("Data validation failed", 400);
@@ -242,7 +251,7 @@ export class UserController {
       }
       let hashedPassword = user.password;
       if (password) {
-        hashedPassword = encode(password);
+        hashedPassword = await encode(password);
       }
       if (role && role != user.role) {
         throw new appError("You can not change your role", 400);
@@ -270,7 +279,10 @@ export class UserController {
   async deleteUser(req, res, next) {
     try {
       const { id } = req.params;
-      const user = await UserController.findUserById(id);
+      const user = await User.findById(id);
+      if (!user) {
+        throw new appError("User not found", 404);
+      }
 
       if (
         req.user.role === configuration.user.roles.admin &&
@@ -291,18 +303,6 @@ export class UserController {
         message: "User deleted",
         data: {},
       });
-    } catch (error) {
-      next(error);
-    }
-  }
-
-  static async findUserById(id) {
-    try {
-      const user = await User.findById(id);
-      if (!user) {
-        throw new appError("User not found", 404);
-      }
-      return user;
     } catch (error) {
       next(error);
     }
