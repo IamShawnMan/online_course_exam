@@ -9,8 +9,8 @@ import { jsonResponse } from "../utils/response.js";
 export class reviewController {
   async create(req, res, next) {
     try {
-      const { courseId } = req.params;
-      const course = await Course.findById({ id: courseId });
+      const { id } = req.params;
+      const course = await Course.findById(id);
       if (!course) {
         throw new appError("Course not found", 404);
       }
@@ -20,6 +20,7 @@ export class reviewController {
       }
       const { rate, comment } = value;
       const userId = req.user.id;
+      const courseId = id;
 
       const newReview = new Review({ userId, courseId, rate, comment });
       await newReview.save();
@@ -42,7 +43,9 @@ export class reviewController {
   async getById(req, res, next) {
     try {
       const { id } = req.params;
-      const review = await Review.findById(id);
+      const review = await Review.findById(id)
+        .populate("userId courseId")
+        .exec();
       if (!review) {
         throw new appError("Review not found", 404);
       }

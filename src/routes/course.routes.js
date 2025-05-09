@@ -10,7 +10,7 @@ const router = Router();
 router
   .post("/", controller.create)
   .post("/:id/enroll", authMiddleware, controller.enrollToCourse)
-  .post("/:id/review", reviewCon.create)
+  .post("/:id/review", authMiddleware, reviewCon.create)
   .get("/", controller.getAll)
   .get("/:id", controller.getOne)
   .put("/:id", controller.update)

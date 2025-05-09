@@ -27,7 +27,15 @@ const courseSchema = new Schema(
   },
   {
     timestamps: true,
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true },
   }
 );
+
+courseSchema.virtual("Review", {
+  ref: "Review",
+  localField: "_id",
+  foreignField: "courseId",
+});
 
 export const Course = model("Course", courseSchema);

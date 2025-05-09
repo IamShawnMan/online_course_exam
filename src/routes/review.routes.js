@@ -9,3 +9,5 @@ router
   .get("/:id", controller.getById)
   .put("/:id", controller.update)
   .delete("/:id", controller.delete);
+
+export { router as reviewRouter };

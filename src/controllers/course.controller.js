@@ -58,7 +58,9 @@ export class courseController {
 
   async getAll(_, res, next) {
     try {
-      const allCourses = await Course.find().populate("category author").exec();
+      const allCourses = await Course.find()
+        .populate("category author Review")
+        .exec();
       return jsonResponse(res, "All courses", allCourses);
     } catch (error) {
       next(error);
@@ -68,7 +70,9 @@ export class courseController {
   async getOne(req, res, next) {
     try {
       const { id } = req.params;
-      const course = await Course.findById(id).populate("category author");
+      const course = await Course.findById(id).populate(
+        "category author Review"
+      );
       if (!course) {
         throw new appError("Course not found", 404);
       }

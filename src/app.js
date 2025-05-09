@@ -5,6 +5,7 @@ import {
   categoryRouter,
   courseRouter,
   enrollmentRouter,
+  reviewRouter,
 } from "./routes/index.js";
 
 const app = express();
@@ -14,6 +15,7 @@ app.use("/api/v1/user", userRouter);
 app.use("/api/v1/category", categoryRouter);
 app.use("/api/v1/course", courseRouter);
 app.use("/api/v1/enrollment", enrollmentRouter);
+app.use("/api/v1/review", reviewRouter);
 
 app.use(catchError);
 
