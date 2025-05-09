@@ -16,6 +16,7 @@ import {
   generateAccessToken,
   generateRefreshToken,
 } from "../utils/generateToken.js";
+import { jsonResponse } from "../utils/response.js";
 
 export class UserController {
   async create(req, res, next) {
@@ -34,12 +35,12 @@ export class UserController {
         throw new appError("User with this emil is already exist", 400);
       }
 
-      // if (
-      //   role != configuration.user.roles.superadmin ||
-      //   role != configuration.user.roles.user
-      // ) {
-      //   throw new appError("This role is not acceptible", 400); //If validation will not work this will not accept wrong roles
-      // }
+      if (
+        role != configuration.user.roles.superadmin &&
+        role != configuration.user.roles.user
+      ) {
+        throw new appError("This role is not acceptible", 400); //If validation will not work this will not accept wrong roles
+      } //The comment above written by myself not by ChatGPT
 
       if (role === configuration.user.roles.superadmin) {
         const isSuperadmin = await User.findOne({
@@ -61,11 +62,7 @@ export class UserController {
 
       await newUser.save();
 
-      res.status(201).json({
-        status: "success",
-        message: `New user created`,
-        data: newUser,
-      });
+      return jsonResponse(res, `New user created`, newUser);
     } catch (error) {
       next(error);
     }
@@ -98,11 +95,7 @@ export class UserController {
 
       await newUser.save();
 
-      res.status(201).json({
-        status: "success",
-        message: `New admin created`,
-        data: newUser,
-      });
+      return jsonResponse(res, `New admin created`, newUser);
     } catch (error) {
       next(error);
     }
@@ -141,11 +134,7 @@ export class UserController {
         }
       });
 
-      res.json({
-        status: "success",
-        message: "Confirmation code sent to your email",
-        data: {},
-      });
+      return jsonResponse(res, "Confirmation code sent to your email", {});
     } catch (error) {
       next(error);
     }
@@ -182,13 +171,9 @@ export class UserController {
         maxAge: 30 * 24 * 60 * 60 * 1000,
       });
 
-      res.json({
-        status: "success",
-        message: "Loggen in successfully",
-        data: {
-          ...payload,
-          token: accessToken,
-        },
+      return jsonResponse(res, "Loggen in successfully", {
+        ...payload,
+        token: accessToken,
       });
     } catch (error) {
       next(error);
@@ -201,11 +186,8 @@ export class UserController {
         {},
         "_id __v fullName email role createdAt updatedAt"
       );
-      res.json({
-        status: "success",
-        message: "All users",
-        data: allUsers,
-      });
+
+      return jsonResponse(res, "All users", allUsers);
     } catch (error) {
       next(error);
     }
@@ -221,11 +203,7 @@ export class UserController {
         throw new appError("User not found", 404);
       }
 
-      res.json({
-        status: "success",
-        message: "User by id",
-        data: user,
-      });
+      return jsonResponse(res, "User by id", user);
     } catch (error) {
       next(error);
     }
@@ -266,11 +244,7 @@ export class UserController {
         { new: true }
       );
 
-      res.json({
-        status: "success",
-        message: "User updated successfully",
-        data: updatedUser,
-      });
+      return jsonResponse(res, "User updated successfully", updatedUser);
     } catch (error) {
       next(error);
     }
@@ -298,11 +272,7 @@ export class UserController {
         throw new appError("Super admin cant be deleted");
       }
       await User.findByIdAndDelete(id);
-      res.json({
-        status: "success",
-        message: "User deleted",
-        data: {},
-      });
+      return jsonResponse(res, "User deleted", {});
     } catch (error) {
       next(error);
     }

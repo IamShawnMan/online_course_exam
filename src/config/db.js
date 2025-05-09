@@ -1,12 +1,13 @@
 import { connect } from "mongoose";
 import { configuration } from "./env.config.js";
+import { logger } from "../utils/logger/logger.js";
 
 export const connectDB = async () => {
   try {
     await connect(configuration.db.uri);
-    console.log("Database connected successfully...");
+    logger.info("Database connected successfully...");
   } catch (error) {
-    console.log(error.message);
+    logger.error(error.message);
     process.exit(1);
   }
 };

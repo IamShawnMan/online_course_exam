@@ -6,3 +6,5 @@ export * from "./user.update.validation.js";
 export * from "./category.update.validation.js";
 export * from "./course.validation.js";
 export * from "./course.update.validate.js";
+export * from "./review.validation.js";
+export * from "./reviewUpdate.validation.js";
