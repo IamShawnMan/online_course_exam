@@ -24,7 +24,7 @@ export class categoryController {
 
   async getAll(_, res, next) {
     try {
-      const allCategories = await Category.find();
+      const allCategories = await Category.find().populate("Course").exec();
       return jsonResponse(res, "All categories", allCategories);
     } catch (error) {
       next(error);

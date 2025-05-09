@@ -32,7 +32,7 @@ export class reviewController {
 
   async getAll(_, res, next) {
     try {
-      const allReviews = await Review.find();
+      const allReviews = await Review.find().populate("userId courseId").exec();
       return jsonResponse(res, "All reviews", allReviews);
     } catch (error) {
       next(error);

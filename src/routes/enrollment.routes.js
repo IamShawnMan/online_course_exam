@@ -5,6 +5,10 @@ const controller = new EnrollmentController();
 
 const router = Router();
 
-router.get("/", controller.getAll);
+router
+  .get("/", controller.getAll)
+  .get("/:id", controller.getOne)
+  .put("/:id", controller.update)
+  .delete("/:id", controller.delete);
 
 export { router as enrollmentRouter };

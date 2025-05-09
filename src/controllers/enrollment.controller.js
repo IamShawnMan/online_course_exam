@@ -42,7 +42,11 @@ export class EnrollmentController {
         { courseId },
         { new: true }
       );
-      return jsonResponse(res, "Enrollment updated successfully");
+      return jsonResponse(
+        res,
+        "Enrollment updated successfully",
+        updatedEnrollment
+      );
     } catch (error) {
       next(error);
     }
