@@ -6,6 +6,9 @@ import {
 import { appError } from "../utils/catchError.js";
 import { jsonResponse } from "../utils/response.js";
 import { configuration } from "../config/env.config.js";
+import { transporter } from "../utils/mailer.js";
+import { enrolledMail } from "../utils/createMail.js";
+import { logger } from "../utils/logger/logger.js";
 
 export class courseController {
   async enrollToCourse(req, res, next) {
@@ -30,8 +33,21 @@ export class courseController {
       if (req.user.role === configuration.user.roles.user) {
         user = req.user.id;
       }
+      const data = {
+        name: req.user.name,
+        email: req.user.email,
+        course: course.title,
+      };
       const newEnrollment = new Enrollment({ userId: user, courseId: id });
       await newEnrollment.save();
+      transporter.sendMail(enrolledMail(data), (err, info) => {
+        if (err) {
+          throw new appError(err.message, 400);
+        } else {
+          logger.info(info);
+          console.log(info);
+        }
+      });
       return jsonResponse(
         res,
         "Enrolled to course successfully",
