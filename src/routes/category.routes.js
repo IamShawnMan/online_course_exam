@@ -23,8 +23,24 @@ router
 
   .get("/:id", controller.getOne)
 
-  .put("/:id", controller.update)
+  .put(
+    "/:id",
+    authMiddleware,
+    roleGuard(
+      configuration.user.roles.superadmin,
+      configuration.user.roles.admin
+    ),
+    controller.update
+  )
 
-  .delete("/:id", controller.delete);
+  .delete(
+    "/:id",
+    authMiddleware,
+    roleGuard(
+      configuration.user.roles.superadmin,
+      configuration.user.roles.admin
+    ),
+    controller.delete
+  );
 
 export { router as categoryRouter };

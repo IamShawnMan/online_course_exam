@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { courseController, reviewController } from "../controllers/index.js";
-import { authMiddleware } from "../middlewares/auth.guard.js";
+import { authMiddleware, roleGuard } from "../middlewares/index.js";
+import { configuration } from "../config/env.config.js";
 
 const controller = new courseController();
 const reviewCon = new reviewController();
@@ -8,12 +9,51 @@ const reviewCon = new reviewController();
 const router = Router();
 
 router
-  .post("/", controller.create)
-  .post("/:id/enroll", authMiddleware, controller.enrollToCourse)
-  .post("/:id/review", authMiddleware, reviewCon.create)
+  .post(
+    "/",
+    authMiddleware,
+    roleGuard(
+      configuration.user.roles.superadmin,
+      configuration.user.roles.admin,
+      configuration.user.roles.author
+    ),
+    controller.create
+  )
+  .post(
+    "/:id/enroll",
+    authMiddleware,
+    roleGuard(
+      configuration.user.roles.superadmin,
+      configuration.user.roles.admin,
+      configuration.user.roles.user
+    ),
+    controller.enrollToCourse
+  )
+  .post(
+    "/:id/review",
+    authMiddleware,
+    roleGuard(configuration.user.roles.user),
+    reviewCon.create
+  )
   .get("/", controller.getAll)
   .get("/:id", controller.getOne)
-  .put("/:id", controller.update)
-  .delete("/:id", controller.delete);
+  .put(
+    "/:id",
+    authMiddleware,
+    roleGuard(
+      configuration.user.roles.superadmin,
+      configuration.user.roles.admin
+    ),
+    controller.update
+  )
+  .delete(
+    "/:id",
+    authMiddleware,
+    roleGuard(
+      configuration.user.roles.superadmin,
+      configuration.user.roles.admin
+    ),
+    controller.delete
+  );
 
 export { router as courseRouter };
